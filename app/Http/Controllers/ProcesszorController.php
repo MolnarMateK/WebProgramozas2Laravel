@@ -2,63 +2,73 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Processzor;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class ProcesszorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    // READ (Lista megjelenítése)
+    public function index(): View
     {
-        //
+        $processzorok = Processzor::orderBy('gyarto')->orderBy('tipus')->get();
+        // VISSZATÉRÉS AZ ÚJ NEVŰ VIEW-VAL
+        return view('processzor_index', compact('processzorok'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // CREATE (Űrlap megjelenítése)
+    public function create(): View
     {
-        //
+        // VISSZATÉRÉS AZ ÚJ NEVŰ VIEW-VAL
+        return view('processzor_create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    // STORE (Új rekord mentése)
+    public function store(Request $request): RedirectResponse
     {
-        //
+        $request->validate([
+            'id' => 'required|integer|unique:processzor',
+            'gyarto' => 'required|string|max:255',
+            'tipus' => 'required|string|max:255',
+        ]);
+
+        $proc = new Processzor();
+        $proc->id = $request->id;
+        $proc->gyarto = $request->gyarto;
+        $proc->tipus = $request->tipus;
+        $proc->save();
+
+        return redirect()->route('crud.index')->with('success', 'Processzor sikeresen létrehozva.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    // EDIT (Szerkesztő űrlap megjelenítése)
+    public function edit(Processzor $processzor): View
     {
-        //
+        // VISSZATÉRÉS AZ ÚJ NEVŰ VIEW-VAL
+        return view('processzor_edit', compact('processzor'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    // UPDATE (Módosítások mentése)
+    public function update(Request $request, Processzor $processzor): RedirectResponse
     {
-        //
+        $request->validate([
+            'gyarto' => 'required|string|max:255',
+            'tipus' => 'required|string|max:255',
+        ]);
+
+        $processzor->gyarto = $request->gyarto;
+        $processzor->tipus = $request->tipus;
+        $processzor->save();
+
+        return redirect()->route('crud.index')->with('success', 'Processzor sikeresen frissítve.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    // DESTROY (Törlés)
+    public function destroy(Processzor $processzor): RedirectResponse
     {
-        //
-    }
+        $processzor->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('crud.index')->with('success', 'Processzor sikeresen törölve.');
     }
 }
