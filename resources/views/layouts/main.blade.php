@@ -4,20 +4,16 @@
 		<title>ReNew Kft. - Notebook Webshop</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		
 		<link rel="stylesheet" href="{{ asset('assets/css/main.css') }}" />
 	</head>
-
+	<!-- is-preload elkerülve a Breeze JS konfliktus miatt -->
 	<body>
-
 		<div id="wrapper">
-
 			<div id="main">
 				<div class="inner">
 
 					<header id="header">
 						<a href="{{ route('home') }}" class="logo"><strong>ReNew Kft.</strong> - Felújított Notebook Szaküzlet</a>
-						
 						<ul class="icons">
 							@auth
 								<li><a href="{{ route('dashboard') }}">{{ Auth::user()->name }} (Profil)</a></li>
@@ -49,11 +45,17 @@
 						<ul>
 							<li><a href="{{ route('home') }}">Főoldal</a></li>
 							<li><a href="{{ route('adatbazis') }}">Adatbázis</a></li>
-							<li><a href="#">Kapcsolat</a></li>
-							<li><a href="#">Üzenetek</a></li>
-							<li><a href="#">Diagram</a></li>
-							<li><a href="#">CRUD (Processzorok)</a></li>
-							<li><a href="#">Admin</a></li>
+							<li><a href="{{ route('kapcsolat') }}">Kapcsolat</a></li>
+							<li><a href="{{ route('diagram') }}">Diagram</a></li>
+
+							@auth
+								<li><a href="{{ route('uzenetek') }}">Üzenetek</a></li>
+								<li><a href="{{ route('crud.index') }}">CRUD (Processzorok)</a></li>
+
+								@if(Auth::user()->role == 'admin')
+									<li><a href="{{ route('admin') }}">Admin</a></li>
+								@endif
+							@endauth
 						</ul>
 					</nav>
 
@@ -63,14 +65,19 @@
 
 				</div>
 			</div>
-
 		</div>
 
+		<!-- Scripts -->
 		<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-		<script src="{{ asset('assetsjs/browser.min.js') }}"></script>
+		<script src="{{ asset('assets/js/browser.min.js') }}"></script>
 		<script src="{{ asset('assets/js/breakpoints.min.js') }}"></script>
 		<script src="{{ asset('assets/js/util.js') }}"></script>
 		<script src="{{ asset('assets/js/main.js') }}"></script>
-
+		
+		<!-- Chart.js CDN a Diagram oldalhoz -->
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		
+		<!-- Egyéni scriptek (pl. Diagram) -->
+		@stack('scripts')
 	</body>
 </html>
