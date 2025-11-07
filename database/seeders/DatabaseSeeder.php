@@ -3,23 +3,41 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        Schema::disableForeignKeyConstraints();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            ProcesszorSeeder::class,
+            OprendszerSeeder::class,
+            GepSeeder::class,
         ]);
+        
+        DB::table('users')->truncate();
+
+        User::create([
+            'name' => 'Admin',
+            'email' => 'admin@admin.com',
+            'password' => Hash::make('password'),
+            'role' => 'admin',
+        ]);
+
+        User::create([
+            'name' => 'User',
+            'email' => 'user@user.com',
+            'password' => Hash::make('password'),
+            'role' => 'user',
+        ]);
+
+        Schema::enableForeignKeyConstraints();
     }
 }
+
+
